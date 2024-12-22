@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package some;
+
+message Example {
+  message Item {
+    double my_float = 1;
+    int64 my_number = 2;
+    string my_string = 3;
+  }
+  map<string, Item> values = 1; 
+}

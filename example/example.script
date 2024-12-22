@@ -1,0 +1,89 @@
+local protoc = require("pbc.protoc")
+local pbc = protoc.new()
+local pb = _G["pb"]
+
+local function save(compilepb)
+	-- 打开文件并写入预编译的protobuf
+	local file_path = "resources/compilepb.pb"
+	local file, errmsg = io.open(file_path, "w")
+	if file then
+		file:write(compilepb)
+		file:close()
+		print("save ok:", file_path)
+	else
+		print("save failed:", errmsg)
+	end
+end
+
+local function compile_protobuf()
+	-- pbc.include_imports = true
+	pbc:addpath("resources/protocol/common")
+	pbc:addpath("resources/protocol/cs_msg")
+	pbc:addpath("resources/protocol/cs_body")
+	local pbfile = {
+		"common_struct.proto",
+		"error_code.proto",
+		"msg.proto",
+		"cs_battle.proto",
+		"cs_dir.proto",
+		"cs_rank.proto",
+		"cs_role.proto",
+		"cs_viewer.proto",
+		"cs_body.proto",
+	}
+
+	local compilepb = ""
+	for _, filename in ipairs(pbfile) do
+		print("compilefile:", filename)
+		compilepb = compilepb .. pbc:compilefile(filename)
+	end
+	save(compilepb)
+end
+
+function init(self)
+	-- You can also add paths
+	-- compile_protobuf()
+	-- local data, err = sys.load_resource("/resources/compilepb.pb")
+	-- if err ~= nil then
+	-- 	error("resources/compilepb.pb:" .. err)
+	-- 	return
+	-- end
+	-- local ret, pos = pb.load(data)
+	-- if not ret then
+	-- 	error("load failed at offset " .. pos)
+	-- end
+	-- local cs_body = {
+	-- 	login_req = {
+	-- 		client_info = {
+	-- 			app_version = "1.1.0",
+	-- 			device_os = "android",
+	-- 			fpid_create_ts = "1734848760123"
+	-- 		}
+	-- 	}
+	-- }
+
+	pbc:loadfile("/resources/test.proto")
+	local example = {
+		values = {
+			first = {
+				my_float = 1.1,
+				my_number = 1234,
+				my_string = "hello"
+			},
+			second = {
+				my_float = 2.2,
+				my_number = 5678,
+				my_string = "world"
+			}
+		}
+
+	}
+
+	local bytes = pb.encode("some.Example", example)
+	print("Package to")
+	print(bytes)
+
+	local unpackage = pb.decode("some.Example", bytes)
+	print("Got data back:")
+	pprint(unpackage)
+end
