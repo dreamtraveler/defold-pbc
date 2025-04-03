@@ -2203,6 +2203,7 @@ static const luaL_reg Module_methods[] =
     {"load", Lpb_load},
     {"loadfile", Lpb_loadfile},
     {"enum", Lpb_enum},
+    {"option", Lpb_option},
     {0, 0}
 };
 
